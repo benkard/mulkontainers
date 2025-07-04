@@ -9,6 +9,7 @@ cd "$(dirname $(readlink -e "$0"))"
 
 image=docker.benkard.de/mulk/openjdk-runtime:latest
 dependencies=(registry.access.redhat.com/ubi9/ubi-micro:latest registry.access.redhat.com/ubi9/ubi-minimal:latest)
+platform=linux/amd64
 use_kaniko=no
 
 ./prepare
@@ -16,6 +17,7 @@ use_kaniko=no
 if [[ "${use_kaniko}" == yes ]]; then
     docker run \
         --mount type=bind,src="$PWD",target=/workspace \
+        --platform "${platform}" \
         gcr.io/kaniko-project/warmer:latest \
         --cache-dir=/workspace/cache \
         --image=registry.access.redhat.com/ubi9/ubi-micro:latest \
@@ -24,6 +26,7 @@ if [[ "${use_kaniko}" == yes ]]; then
     docker run \
         --mount type=bind,src="$PWD",target=/workspace \
         --mount type=bind,src="$HOME/.docker",target=/root/.docker,ro=true \
+        --platform "${platform}" \
         gcr.io/kaniko-project/executor:latest \
         --dockerfile Dockerfile \
         --destination "${image}" \
@@ -33,8 +36,8 @@ if [[ "${use_kaniko}" == yes ]]; then
         --reproducible=true
 else
     for x in "${dependencies[@]}"; do
-        docker pull "$x"
+        docker pull --platform "${platform}" "$x"
     done
-    docker build -t "${image}" .
+    docker build --platform "${platform}" -t "${image}" .
     docker push "${image}"
 fi
