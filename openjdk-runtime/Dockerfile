@@ -12,6 +12,7 @@ RUN microdnf --assumeyes --nodocs install binutils
 RUN /jdk/*/bin/jlink \
     -J-XX:MaxRAMPercentage=75 \
     --add-modules ALL-MODULE-PATH \
+    --module-path /jdk/*/jmods \
     --compress=1 \
     --no-man-pages \
     --strip-debug \
