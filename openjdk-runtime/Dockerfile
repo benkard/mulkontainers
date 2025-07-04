@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS ubi-minimal
+FROM registry.access.redhat.com/ubi10/ubi-minimal:latest AS ubi-minimal
 
 # Add OpenJDK (complete).
 ADD jdk-dist/latest.tar.gz /jdk
@@ -23,7 +23,7 @@ RUN microdnf --assumeyes --nodocs install findutils
 RUN find /java -exec touch --date=@0 '{}' ';'
 
 # Build the final image.
-FROM registry.access.redhat.com/ubi9/ubi-micro:latest
+FROM registry.access.redhat.com/ubi10/ubi-micro:latest
 COPY --from=ubi-minimal /lib64/libz.so.1 /lib64/
 COPY --from=ubi-minimal /java /java
 ENV JAVA_HOME=/java
